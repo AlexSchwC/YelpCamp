@@ -8,6 +8,29 @@
 </head>
 <body>
     <h1>Edit <%= campground.name %> Campground</h1>
+
+    <form action="/campgrounds/<%= campground._id %>?_method=PUT" method="POST">
+        <div>
+            <label for="name">Campground Name: </label>
+            <input type="text" name="name" id="name" placeholder="Campground name" value="<%= campground.name %>">
+            <label for="location">Location: </label>
+            <input type="text" name="location" id="location" value="<%= campground.location %>">
+            <br>
+            <label for="description">Description: </label>
+            <input type="textarea" name="description" id="description" value="<%= campground.description %>">
+            <br>
+            <label for="price">Price: </label>
+            <input type="number" name="price" id="price" value="<%= campground.price %>">
+            <br>
+            <button>Edit</button>
+        </div>
+    </form>
+    <br>
+    <form action="/campgrounds/<%= campground._id %>?_method=DELETE" method="POST">
+        <div>
+            <button>Delete</button>
+        </div>
+    </form>
     
 </body>
 </html>

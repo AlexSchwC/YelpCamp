@@ -1,5 +1,6 @@
 const express = require("express");
 const path = require("path");
+const methodOverride = require('method-override');
 
 const mongoose = require("mongoose");
 
@@ -21,6 +22,7 @@ mongoose.connect("mongodb://localhost:27017/yelp-camp", {
 const server = express();
 
 server.use(express.urlencoded({ extended: true }));
+server.use(methodOverride( "_method" ))
 
 server.set("view engine", "ejs");
 server.set("views", path.join(__dirname, "views"));
@@ -47,6 +49,18 @@ server.post("/campgrounds", async (req, res) => {
 server.get("/campgrounds/:id/edit", async (req, res) => {
     const campground = await Campground.findById(req.params.id);
     res.render("./campgrounds/edit", { campground });
+})
+
+server.put("/campgrounds/:id", async (req, res) => {
+    const { id } = req.params;
+    await Campground.findByIdAndUpdate(id, req.body, { runValidators: true, new: true });
+    res.redirect(`/campgrounds/${id}`)
+})
+
+server.delete("/campgrounds/:id", async (req, res) => {
+    const { id } = req.params;
+    const deletedCamp = await Campground.findByIdAndDelete(id, {new: true});
+    res.redirect("/campgrounds")
 })
 
 server.get("/campgrounds/:id", async (req, res) => {
