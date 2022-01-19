@@ -1,7 +1,17 @@
-* {
-    outline: 1px red solid;
-};
+// * {
+//     outline: 1px solid red;
+// }
 
-body {
-    background-color:red;
+.main-body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    
+    footer {
+        margin-top: auto;
+    }
+}
+
+.imagem-camp {
+    max-width: 800px;
 }

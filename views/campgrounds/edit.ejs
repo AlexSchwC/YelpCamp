@@ -1,26 +1,42 @@
 <% layout("layouts/boilerplate") %> 
 
-    <h1>Edit <%= campground.name %> Campground</h1>
+    <div class="row">
+        <h1 class="text-center mb-3">Edit Campground</h1>
+        <div class="col-6 offset-3">
+            <form action="/campgrounds/<%= campground._id %>?_method=PUT" method="POST">
+                <div class="mb-3">
+                    <label class="form-label" for="name">Campground Name: </label>
+                    <input class="form-control" type="text" name="name" id="name" value="<%= campground.name %>">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="location">Location: </label>
+                    <input class="form-control" type="text" name="location" id="location" value="<%= campground.location %>">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="image">Image URL: </label>
+                    <input class="form-control" type="text" name="image" id="image" value="<%= campground.image %>">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="description">Description: </label>
+                    <textarea class="form-control" type="textarea" name="description" id="description"><%= campground.description %>"</textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="price">Price: </label>
+                    <div class="input-group mb-3">
+                            <span class="input-group-text" id="price">$</span>
+                            <input type="text" class="form-control" placeholder="0.00" aria-label="price" aria-describedby="price" name="price" value="<%= campground.price %>">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <button class="btn btn-info">Update Campground</button>
+                    <a class="btn btn-warning" href="/campgrounds/<%= campground._id %>">Cancel Edit</a>
+                </div>
 
-    <form action="/campgrounds/<%= campground._id %>?_method=PUT" method="POST">
-        <div>
-            <label for="name">Campground Name: </label>
-            <input type="text" name="name" id="name" placeholder="Campground name" value="<%= campground.name %>">
-            <label for="location">Location: </label>
-            <input type="text" name="location" id="location" value="<%= campground.location %>">
-            <br>
-            <label for="description">Description: </label>
-            <input type="textarea" name="description" id="description" value="<%= campground.description %>">
-            <br>
-            <label for="price">Price: </label>
-            <input type="number" name="price" id="price" value="<%= campground.price %>">
-            <br>
-            <button>Edit</button>
+            </form>
+            <form action="/campgrounds/<%= campground._id %>?_method=DELETE" method="POST">
+                <div class="mb-3">
+                    <button class="btn btn-danger">Delete Campground</button>
+                </div>
+            </form>
         </div>
-    </form>
-    <br>
-    <form action="/campgrounds/<%= campground._id %>?_method=DELETE" method="POST">
-        <div>
-            <button>Delete</button>
-        </div>
-    </form>
+    </div>

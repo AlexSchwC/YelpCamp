@@ -1,8 +1,21 @@
 <% layout("layouts/boilerplate") %> 
 
-    <h1><%= campground.name %></h1>
-    <h2><%= campground.location %></h2>
+    <div class="row">
+        <div class="card col-6 offset-3 p-0 mb-8">
+            <img src="<%= campground.image %>" class="card-img-top imagem-camp" alt=...">
+            <div class="card-body">
+                <h5 class="card-title"><%= campground.name %></h5>
+                <p class="card-text"><%= campground.description %></p>
+            </div>
+            <ul class="list-group list-group-flush">
+            <li class="list-group-item text-muted"><%= campground.location %></li>
+            <li class="list-group-item"><strong>$: <%= campground.price %></strong> /night</li>
+            </ul>
+            <div class="card-body">
+                <a href="/campgrounds/<%= campground.id %>/edit" class="card-link btn btn-info">Edit</a>
+                <a href="/campgrounds" class="card-link btn btn-dark">Go Back</a>
+            </div>
+        </div>
+    </div>
 
-    <a href="/campgrounds">Go Back</a>
-    <br>
-    <a href="/campgrounds/<%= campground.id %>/edit">Edit</a>
+  
