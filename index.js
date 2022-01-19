@@ -1,5 +1,6 @@
 const express = require("express");
 const path = require("path");
+const ejsMate = require("ejs-mate");
 const methodOverride = require('method-override');
 
 const mongoose = require("mongoose");
@@ -23,6 +24,8 @@ const server = express();
 
 server.use(express.urlencoded({ extended: true }));
 server.use(methodOverride( "_method" ))
+
+server.engine("ejs", ejsMate);
 
 server.set("view engine", "ejs");
 server.set("views", path.join(__dirname, "views"));
