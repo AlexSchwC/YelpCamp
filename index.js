@@ -2,7 +2,7 @@ const express = require("express");
 const path = require("path");
 const ejsMate = require("ejs-mate");
 const methodOverride = require("method-override");
-const axios = require("axios");
+const Joi = require("joi");
 
 const asyncHandler = require("./public/../utillity/asyncHandler");
 const ExpressError = require("./public/../utillity/ExpressError")
@@ -10,6 +10,7 @@ const ExpressError = require("./public/../utillity/ExpressError")
 const mongoose = require("mongoose");
 
 const Campground = require("./models/campground");
+const { campgroundSchema } = require("./schemas-joi.js")
 
 mongoose.connect("mongodb://localhost:27017/yelp-camp", {
     useNewUrlParser: true,
@@ -26,6 +27,16 @@ mongoose.connect("mongodb://localhost:27017/yelp-camp", {
 
 const server = express();
 
+const validateCampground = (req, res, next) => {
+    const { error } = campgroundSchema.validate(req.body);
+    if (error) {
+        const msg = error.details.map(el => el.message).join(",")
+        throw new ExpressError(400, msg);
+    } else {
+        next();
+    }
+}
+
 server.use(express.urlencoded({ extended: true }));
 server.use(methodOverride( "_method" ));
 server.use('/public', express.static(__dirname + '/views'));
@@ -33,21 +44,6 @@ server.engine("ejs", ejsMate);
 
 server.set("view engine", "ejs");
 server.set("views", path.join(__dirname, "views"));
-
-server.get("/unsplashreq", async (req, res) => {
-    try {
-        const data = await axios.get('https://api.unsplash.com/photos/random', {
-            params: {
-            client_id: '60NX7SpibLK4QEU7wAxv19GMm2PJ86hFX5JJBf_05VU',
-            collections: 483251,
-        },   
-    })
-    console.log(data.data.urls.regular)
-
-    } catch (err) {
-        console.log(err)
-    }
-})
 
 server.get("/", (req, res) => {
     res.render("home");
@@ -62,7 +58,7 @@ server.get("/campgrounds/new", (req, res) => {
     res.render("./campgrounds/new");
 })
 
-server.post("/campgrounds", asyncHandler(async (req, res) => {
+server.post("/campgrounds", validateCampground, asyncHandler(async (req, res) => {
     const newCampground = new Campground(req.body);
     await newCampground.save();
     res.redirect(`/campgrounds/${newCampground._id}`)
@@ -73,7 +69,7 @@ server.get("/campgrounds/:id/edit", asyncHandler(async (req, res) => {
     res.render("./campgrounds/edit", { campground });
 }))
 
-server.put("/campgrounds/:id", asyncHandler(async (req, res) => {
+server.put("/campgrounds/:id", validateCampground, asyncHandler(async (req, res) => {
     const { id } = req.params;
     await Campground.findByIdAndUpdate(id, req.body, { runValidators: true, new: true });
     res.redirect(`/campgrounds/${id}`)
@@ -95,8 +91,9 @@ server.all("*", (req, res, next) => {
 })
 
 server.use((err, req, res, next) => {
-    const {status = 500, message = "Something went wrong!"} = err;
-    res.status(status).send(message);
+    const {status = 500} = err;
+    if (!err.message) {err.message = "Something went wrong! :("}
+    res.status(status).render("error", { err })
 })
 
 server.listen(3000, () => {
