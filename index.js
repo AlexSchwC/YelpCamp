@@ -10,13 +10,13 @@ const ExpressError = require("./public/../utillity/ExpressError")
 const mongoose = require("mongoose");
 
 const Campground = require("./models/campground");
-const { campgroundSchema } = require("./schemas-joi.js")
+const Review = require("./models/review");
+const { campgroundSchema, reviewSchema } = require("./schemas-joi.js")
 
 mongoose.connect("mongodb://localhost:27017/yelp-camp", {
     useNewUrlParser: true,
     useUnifiedTopology: true
-})
-
+}) 
 .then(() => {
     console.log("Mongo OPEN");
 })
@@ -29,6 +29,16 @@ const server = express();
 
 const validateCampground = (req, res, next) => {
     const { error } = campgroundSchema.validate(req.body);
+    if (error) {
+        const msg = error.details.map(el => el.message).join(",")
+        throw new ExpressError(400, msg);
+    } else {
+        next();
+    }
+}
+
+const validateReview = (req, res, next) => {
+    const { error } = reviewSchema.validate(req.body);
     if (error) {
         const msg = error.details.map(el => el.message).join(",")
         throw new ExpressError(400, msg);
@@ -64,6 +74,22 @@ server.post("/campgrounds", validateCampground, asyncHandler(async (req, res) =>
     res.redirect(`/campgrounds/${newCampground._id}`)
 }))
 
+server.post("/campgrounds/:id/reviews", validateReview, asyncHandler(async (req, res) => {
+    const campground = await Campground.findById(req.params.id)
+    const review = new Review(req.body.review)
+    campground.reviews.push(review)
+    await review.save()
+    await campground.save()
+    res.redirect(`/campgrounds/${campground.id}`)
+}))
+
+server.delete("/campgrounds/:id/reviews/:reviewID", asyncHandler(async (req, res) => {
+    const { id, reviewID } = req.params
+    await Campground.findByIdAndUpdate(id, { $pull: { reviews: reviewID } })
+    await Review.findByIdAndDelete(reviewID)
+    res.redirect(`/campgrounds/${id}`)
+}))
+
 server.get("/campgrounds/:id/edit", asyncHandler(async (req, res) => {
     const campground = await Campground.findById(req.params.id);
     res.render("./campgrounds/edit", { campground });
@@ -77,12 +103,12 @@ server.put("/campgrounds/:id", validateCampground, asyncHandler(async (req, res)
 
 server.delete("/campgrounds/:id", asyncHandler(async (req, res) => {
     const { id } = req.params;
-    const deletedCamp = await Campground.findByIdAndDelete(id, {new: true});
+    await Campground.findByIdAndDelete(id);
     res.redirect("/campgrounds")
 }))
 
 server.get("/campgrounds/:id", asyncHandler(async (req, res) => {
-    const campground = await Campground.findById(req.params.id)
+    const campground = await Campground.findById(req.params.id).populate("reviews")
     res.render("./campgrounds/show", { campground })
 }))
 

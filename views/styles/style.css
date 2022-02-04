@@ -16,4 +16,10 @@
 .imagem-camp {
   max-width: 800px;
 }
+
+.imagem-camp {
+  max-height: 400px;
+  width: auto;
+  background-size: cover;
+}
 /*# sourceMappingURL=style.css.map */
