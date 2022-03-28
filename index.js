@@ -1,17 +1,12 @@
 const express = require("express");
+const session = require("express-session")
 const path = require("path");
 const ejsMate = require("ejs-mate");
 const methodOverride = require("method-override");
-const Joi = require("joi");
 
-const asyncHandler = require("./public/../utillity/asyncHandler");
-const ExpressError = require("./public/../utillity/ExpressError")
+const ExpressError = require("./util/ExpressError")
 
 const mongoose = require("mongoose");
-
-const Campground = require("./models/campground");
-const Review = require("./models/review");
-const { campgroundSchema, reviewSchema } = require("./schemas-joi.js")
 
 const campgroundRoutes = require('./routes/campgrounds.js')
 const reviewsRoutes = require('./routes/reviews.js')
@@ -32,11 +27,20 @@ const server = express();
 
 server.use(express.urlencoded({ extended: true }));
 server.use(methodOverride( "_method" ));
-server.use('/public', express.static(__dirname + '/views'));
+server.use(express.static(__dirname + '/public'));
 server.engine("ejs", ejsMate);
 
 server.set("view engine", "ejs");
 server.set("views", path.join(__dirname, "views"));
+
+server.use(session({
+    secret: 'hellothere',
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        maxAge: 1000 * 60 * 60 * 24 * 7
+    }
+}))
 
 server.get("/", (req, res) => {
     res.render("home");

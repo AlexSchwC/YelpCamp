@@ -1,8 +1,8 @@
 const express = require('express')
 const router = express.Router()
 
-const asyncHandler = require("../public/../utillity/asyncHandler")
-const ExpressError = require("../public/../utillity/ExpressError")
+const asyncHandler = require("../util/asyncHandler")
+const ExpressError = require("../util/ExpressError")
 
 const Review = require("../models/review");
 const { reviewSchema } = require("../schemas-joi.js")
