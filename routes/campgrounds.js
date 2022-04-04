@@ -23,12 +23,17 @@ router.get("/", asyncHandler(async (req, res) => {
 }))
 
 router.get("/new", (req, res) => {
+    if (!req.isAuthenticated()) {
+        req.flash('error', 'You must be logged in!')
+        return res.redirect('/login')
+    }
     res.render("./campgrounds/new");
 })
 
 router.post("/", validateCampground, asyncHandler(async (req, res) => {
     const newCampground = new Campground(req.body);
     await newCampground.save();
+    req.flash('success', 'Succesfully created campground')
     res.redirect(`/campgrounds/${newCampground._id}`)
 }))
 
@@ -51,6 +56,10 @@ router.delete("/:id", asyncHandler(async (req, res) => {
 
 router.get("/:id", asyncHandler(async (req, res) => {
     const campground = await Campground.findById(req.params.id).populate("reviews")
+    if(!campground) {
+        req.flash('error', 'Campground not found!')
+        return res.redirect("/campgrounds")
+    }
     res.render("./campgrounds/show", { campground })
 }))
 
