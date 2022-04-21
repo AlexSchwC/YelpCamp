@@ -30,11 +30,6 @@ mongoose.connect("mongodb://0.0.0.0:27017/yelp-camp", {
     console.log(err);
 })
 
-passport.use(new LocalStrategy(User.authenticate()))
-
-passport.serializeUser(User.serializeUser())
-passport.deserializeUser(User.deserializeUser())
-
 const server = express();
 
 server.use(express.urlencoded({ extended: true }));
@@ -58,6 +53,17 @@ server.use(session({
 server.use((req, res, next) => {
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
+    next()
+})
+
+server.use(passport.initialize());
+server.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()))
+passport.serializeUser(User.serializeUser())
+passport.deserializeUser(User.deserializeUser())
+
+server.use((req, res, next) => {
+    res.locals.currentUser = req.user
     next()
 })
 

@@ -3,6 +3,7 @@ const router = express.Router()
 
 const asyncHandler = require("../util/asyncHandler")
 const ExpressError = require("../util/ExpressError")
+const isLoggedIn = require('../util/isLoggedIn')
 
 const Campground = require("../models/campground");
 const { campgroundSchema } = require("../schemas-joi.js")
@@ -22,12 +23,8 @@ router.get("/", asyncHandler(async (req, res) => {
     res.render("./campgrounds/campground", { campgrounds })
 }))
 
-router.get("/new", (req, res) => {
-    if (!req.isAuthenticated()) {
-        req.flash('error', 'You must be logged in!')
-        return res.redirect('/login')
-    }
-    res.render("./campgrounds/new");
+router.get("/new", isLoggedIn, (req, res) => {
+    res.render("./campgrounds/new")
 })
 
 router.post("/", validateCampground, asyncHandler(async (req, res) => {
