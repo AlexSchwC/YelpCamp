@@ -1,10 +1,11 @@
 const express = require('express')
-const router = express.Router()
+const router = express.Router({mergeParams: true})
 
 const asyncHandler = require("../util/asyncHandler")
 const ExpressError = require("../util/ExpressError")
 
-const Review = require("../models/review");
+const Review = require("../models/review")
+const Campground = require("../models/campground")
 const { reviewSchema } = require("../schemas-joi.js")
 
 const validateReview = (req, res, next) => {

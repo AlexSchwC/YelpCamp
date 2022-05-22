@@ -43,6 +43,7 @@ const seedDB = async () => {
         // const image = "https://images.unsplash.com/photo-1503507026622-bd90164039ef?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1171&q=80"
         const camp = new Campground({
             name: `${sample(descriptors)} ${sample(places)}`,
+            author: '6264455d72bff1ef90d2cb42',
             location: `${cities[rand1000].city} - ${cities[rand1000].state}`,
             image: image,
             price: Math.floor(Math.random() * 30) + 10,
